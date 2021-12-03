@@ -1,0 +1,16 @@
+export {default as Inicio} from './Inicio';
+export {default as Ventas} from './Ventas';
+export {default as Creditos} from './Creditos';
+export {default as Cobros} from './Cobros';
+export {default as Cotizaciones} from './Cotizaciones';
+export {default as Reservas} from './Reservas';
+export {default as Caja} from './Caja';
+export {default as Clientes} from './Clientes';
+export {default as Notificacion} from './Notificacion';
+export {default as Setting} from './Setting';
+export {default as Search} from './Search';
+export {default as Caret} from './Caret';
+export {default as Crear} from './Crear';
+export {default as Calendario} from './Calendario';
+export {default as Estadisticas} from './Estadisticas';
+export {default as Logo} from './Logo';
