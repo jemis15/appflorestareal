@@ -1,7 +1,7 @@
-import Layout from "../components/Layout/Layout";
+import Layout from "../../../../components/Layout/Layout";
 
 export default function Estadisticas() {
-  return <p>Calendario</p>;
+  return <p>Estadisticas</p>;
 }
 
 Estadisticas.getLayout = function getLayout(page) {

@@ -1,169 +1,77 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import NavbarContext from "../../context/Navbar/NavbarContext";
-import {
-  Caret as IconCaret,
-  Crear as IconCrear,
-  Logo as Logo,
-} from "../SVGIcons";
+import FlorestaRealLogo from "../FlorestaRealLogo";
+import ManagerButtonChangeProject from "../ManagerButtonChangeProject/ManagerButtonChangeProject";
+import Portal from "../Portal";
+import { Crear as IconCrear } from "../SVGIcons";
 
-const projects = [
-  { id: 1, name: "Proyecto Satipo" },
-  { id: 2, name: "Proyecto Mazamari" },
-  { id: 3, name: "Proyecto Pangoa" },
-];
 
-function Header() {
+function Header({ isMember }) {
   const { isCollapse } = useContext(NavbarContext);
-  const [currentProject, setCurrentProject] = useState({
-    id: 1,
-    name: "Project Satipo",
-  });
-
-  function handleChangeCurrentProject(projectId) {
-    var currentProject = projects.find((project) => project.id === projectId);
-    if (currentProject) {
-      setCurrentProject(currentProject);
-    }
-  }
 
   return (
     <header>
       <div
-        className={`flex flex-nowrap items-center ${
-          isCollapse ? "px-2" : "px-4"
-        } mt-2`}
+        className={`flex flex-nowrap ${
+          isCollapse ? "justify-center" : "px-4"
+        } py-2`}
       >
-        <Logo size="50" />
-        {!isCollapse && (
-          <h4 className="font-semibold text-xl ml-4 truncate text-gray-600">Floresta Real</h4>
-        )}
+        <FlorestaRealLogo sizeLogo="50" isTextHidden={isCollapse} />
       </div>
 
-      <ButtonProject
-        projects={projects}
-        currentProject={currentProject}
-        changeCurrentProject={handleChangeCurrentProject}
-      />
-      <ButtonCrear />
+      <div className={`${isCollapse ? 'flex justify-center py-2' : 'px-4 py-2'}`}>
+        <ManagerButtonChangeProject />
+      </div>
+
+      {isMember && <ButtonCrear />}
     </header>
-  );
-}
-
-function ButtonProject({ projects, currentProject, changeCurrentProject }) {
-  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
-  const { isCollapse } = useContext(NavbarContext);
-
-  return (
-    <div className={`${isCollapse ? "px-2 mt-4" : "px-4 mt-2"}`}>
-      <div className="relative">
-        <button
-          className={`flex w-full items-center ${
-            isCollapse
-              ? "justify-center hover:bg-gray-100"
-              : "justify-between border border-gray-300 px-2 py-2 hover:border-gray-400"
-          } rounded cursor-pointer select-none`}
-          onClick={() => setIsOpenDropdown(!isOpenDropdown)}
-        >
-          <div className="flex items-center space-x-3 overflow-hidden">
-            <div className="flex items-center">
-              <span
-                className={`inline-block w-8 h-8 bg-gray-500 rounded-full`}
-              />
-            </div>
-            {!isCollapse && (
-              <div className="truncate">{currentProject.name}</div>
-            )}
-          </div>
-          {!isCollapse && (
-            <div>
-              <IconCaret size="14" fill />
-            </div>
-          )}
-        </button>
-        {isOpenDropdown && (
-          <DropdowProjects
-            projects={projects}
-            currentProject={currentProject}
-            changeCurrentProject={changeCurrentProject}
-            closeDropdown={() => setIsOpenDropdown(false)}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function DropdowProjects({
-  projects,
-  currentProject,
-  changeCurrentProject,
-  closeDropdown,
-}) {
-  useEffect(() => {
-    document.addEventListener("click", closeDropdown);
-    return () => document.removeEventListener("click", closeDropdown);
-  }, []);
-  return (
-    <div className="absolute top-full z-10 w-64 bg-white border border-gray-300 mt-1 px-2 py-3 rounded shadow-xl">
-      <div className="px-1 mb-2">
-        <h4 className="font-semibold text-sm select-none">Tus proyectos</h4>
-      </div>
-      <div className="space-y-1">
-        {projects.map((project) => {
-          const isCurrentProject = project.id === currentProject.id;
-
-          return (
-            <button
-              className={`flex items-center w-full px-2 py-2 rounded space-x-2 ${
-                isCurrentProject
-                  ? "bg-blue-100 hover:bg-blue-100"
-                  : "hover:bg-gray-100"
-              }`}
-              onClick={() => changeCurrentProject(project.id)}
-              key={project.id}
-            >
-              <div>
-                <div className="w-8 h-8 bg-gray-500 rounded-full"></div>
-              </div>
-              <div>
-                <div className="truncate text-sm">{project.name}</div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 
 function ButtonCrear() {
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+  const [coordenadas, setCoordenadas] = useState([0, 0]);
+  const miref = useRef();
   const { isCollapse } = useContext(NavbarContext);
+
+  function handleOpenDropdown(e) {
+    setIsOpenDropdown(!isOpenDropdown);
+    var direct = miref.current.getBoundingClientRect();
+    setCoordenadas([direct.bottom, direct.left]);
+  }
 
   return (
     <div className={`${isCollapse ? "px-2" : "px-4"} mt-4`}>
       <div className="relative">
         <button
+          ref={miref}
           className="flex items-center justify-center w-full bg-green-500 hover:bg-green-600 px-3 py-2 rounded space-x-2"
-          onClick={() => setIsOpenDropdown(!isOpenDropdown)}
+          onClick={handleOpenDropdown}
         >
           <div className="flex items-center justify-center w-5 h-5">
             <IconCrear fill color="white" size="16" />
           </div>
           {!isCollapse && (
-            <div className="text-white font-bold text-sm leading-none">Crear</div>
+            <div className="text-white font-bold text-sm leading-none">
+              Crear
+            </div>
           )}
         </button>
 
         {isOpenDropdown && (
-          <DropdownCrear closeDropdown={() => setIsOpenDropdown(false)} />
+          <Portal>
+            <DropdownCrear
+              coordenadas={coordenadas}
+              closeDropdown={() => setIsOpenDropdown(false)}
+            />
+          </Portal>
         )}
       </div>
     </div>
   );
 }
 
-function DropdownCrear({ closeDropdown }) {
+function DropdownCrear({ coordenadas, closeDropdown }) {
   useEffect(() => {
     document.addEventListener("click", closeDropdown);
     return () => document.removeEventListener("click", closeDropdown);
@@ -177,36 +85,47 @@ function DropdownCrear({ closeDropdown }) {
     );
   }
 
-  return (
-    <div className="absolute bg-white border border-gray-300 shadow-xl mt-3">
+  function Button({ children }) {
+    return (
       <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className="absolute bg-white border border-gray-300 shadow-xl mt-3"
+      style={{ top: coordenadas[0], left: coordenadas[1] }}
+    >
+      <Button>
         <IconCrear size="16" color="#1877F2" />
         <Text>Nuevo cliente</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Nueva venta</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Reservar una propiedad</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Crear cotización</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Cobrar a un cliente</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Agregar ingreso</Text>
-      </button>
-      <button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
+      </Button>
+      <Button className="w-full flex items-center p-3 hover:bg-blue-50 space-x-2">
         <IconCrear size="16" color="#1877F2" />
         <Text>Agregar egreso</Text>
-      </button>
+      </Button>
 
       <style jsx>{`
         div::before {

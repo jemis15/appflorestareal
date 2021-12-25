@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
-    --sidebar-width: 280px;
+:root {
+  --sidebar-width: 280px;
 }
 
-body{
-    margin-left: var(--sidebar-width);
-    @apply bg-gray-100;
+body {
+  margin-left: var(--sidebar-width);
+  @apply bg-gray-100;
 }
