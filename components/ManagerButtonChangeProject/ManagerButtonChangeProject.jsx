@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useGuild from "../../hooks/useGuild";
 import useGuilds from "../../hooks/useGuilds";
 import BaseText from "../Base/BaseText";
-import ButtonChangeProject from "../ButtonChangePropject/ButtonChangeProject";
+import ButtonChangeProject from "../ButtonChangeProject/ButtonChangeProject";
 import { Project as IconProject } from "../SVGIcons";
 
 const ManagerButtonChangeProject = () => {
